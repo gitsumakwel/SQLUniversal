@@ -11,4 +11,4 @@ ThisFile *thisfile = [ThisFile create];
 
 // all is NSString
 
-[thisfile sqlStatement:sqlStatement dbName:dbName tableName:tableName]
+[thisfile sqlStatement:sqlStatement dbName:dbName tableName:tableName];
