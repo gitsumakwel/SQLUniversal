@@ -28,14 +28,21 @@ static sqlite3_stmt *statement;
 
 - (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName tableName:(NSString *)tableName
 {
+    
     sqlStatement = [sqlStatement stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     char c = [sqlStatement characterAtIndex:0];
     if(c != 'S' || c != 's') {
         return [FileSection sqlStatement:sqlStatement dbName:dbName];
-    } else {
+    }
+
+    else {
         /*
-         * you can do whatever you want inside the WHILE statement
-         * NSString *ename = [[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, 0)];
+         * you can do whatever want in here as long as your creating sqlblock
+         * contains:
+         * sqlite3_step(*statement == SQLITE_ROW) {
+           NSString *ename = [[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, 0)]; // sample getting data from column 0
+           }
+         *
         */
         
         SqlBlock sqlblock = ^(sqlite3_stmt **statement) {
@@ -68,10 +75,10 @@ static sqlite3_stmt *statement;
                 //
             }
             return [NSArray arrayWithArray:mainArray];
-        };
+        }; //sqlblock
         
         return [FileSection sqlBlock:sqlblock sqlStatement:sqlStatement dbName:dbName];
-    }
+    } // esle
     return NO;
 }
 
