@@ -25,7 +25,7 @@ typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement);
  *
  * if([FileSection sqlStatement:insert_stmt dbName:dbName]) NSLog(@"it worked");
  *
-*/
+ */
 
 /* + (BOOL)sqlBlock:(SqlBlock)sqlblock sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
  * used: Select query only
@@ -35,10 +35,23 @@ typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement);
  * NSString *insertStatement = @"SELECT row1,row2,row3 from table";
  *
  * NSString *dbName = @"DBFile.db";
+ * NSMutableArray *mainArray = [[NSMutableArray alloc] init];
  *
- * if([FileSection sqlStatement:insert_stmt dbName:dbName]) NSLog(@"it worked");
+ * SqlBlock sqlblock = ^(sqlite3_stmt **statement) {
+ 
+        while(sqlite3_step(*statement) == SQLITE_ROW) {
+            NSMutableArray *subarray = [[NSMutableArray alloc] initWithCapacity:3];
+            for(int i=0; i < 3; i++) {
+                [subarray addObject:[[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, i)]];
+            }
+        [mainArray addObject:subarray];
+ 
+    }
+ 
+  } //sqlblock
  *
  */
+
 
 @interface FileSection : NSObject
 + (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
