@@ -49,7 +49,7 @@ static sqlite3_stmt *statement;
             if(sqlite3_step(*statement) == SQLITE_ERROR) return @[@NO];
             
             int c = [[sqlStatement componentsSeparatedByString:@","] count];
-            if([sqlStatement rangeOfString:@"Count"].length) {
+            if([sqlStatement rangeOfString:@"pragma"].length) {
                 SqlBlock sqlblock = ^(sqlite3_stmt **statement){
                     int c = 0;
                     if(sqlite3_step(*statement) == SQLITE_ERROR) return @[@NO];
