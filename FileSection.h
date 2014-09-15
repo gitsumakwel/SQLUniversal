@@ -41,7 +41,7 @@ typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement);
  */
 
 @interface FileSection : NSObject
-+ (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:dbName;
++ (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
 + (NSArray *)sqlBlock:(SqlBlock)sqlblock sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
 
 @end
