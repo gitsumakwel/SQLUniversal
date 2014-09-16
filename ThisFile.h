@@ -18,5 +18,6 @@
 #import <Foundation/Foundation.h>
 
 @interface ThisFile : NSObject
++ (id)create;
 - (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName tableName:(NSString *)tableName;
 @end
