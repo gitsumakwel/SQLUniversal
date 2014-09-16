@@ -30,27 +30,27 @@ static sqlite3_stmt *statement;
 {
     NSMutableArray *data;
     NSString *filepath = [self filePathWithDBname:dbName];
-    if(filepath) {
-        const char *dbpath = [filepath UTF8String];
-        if(sqlite3_open(dbpath, &eventDatabase) == SQLITE_OK) {
-            const char *sql_stmt = [sqlStatement UTF8String];
-            // Determine if we are going to create a new table
-            // Or we're gonna use prepare for existing table
-            if([sqlStatement rangeOfString:@"CREATE"].length) {
-                char *message_error;
-                if (sqlite3_exec(eventDatabase, sql_stmt, NULL, NULL, &message_error) != SQLITE_OK) {
-                    return @[@NO];
-                }
-            } else {
-                sqlite3_prepare_v2(eventDatabase, sql_stmt, -1, &statement, NULL);
-                //sqlite3_bind_text(statement, 1, [@"Blob" UTF8String], -1,SQLITE_TRANSIENT);
-                 data = [NSMutableArray arrayWithArray:sqlblock(&statement)];
+
+    const char *dbpath = [filepath UTF8String];
+    if(sqlite3_open(dbpath, &eventDatabase) == SQLITE_OK) {
+        const char *sql_stmt = [sqlStatement UTF8String];
+        // Determine if we are going to create a new table
+        // Or we're gonna use prepare for existing table
+        if([sqlStatement rangeOfString:@"CREATE"].length) {
+            char *message_error;
+            if (sqlite3_exec(eventDatabase, sql_stmt, NULL, NULL, &message_error) != SQLITE_OK) {
+                return @[@NO];
             }
-            sqlite3_reset(statement);
-            sqlite3_finalize(statement); // destroy object used by _prepare_v2
-            sqlite3_close(eventDatabase);
+        } else {
+            sqlite3_prepare_v2(eventDatabase, sql_stmt, -1, &statement, NULL);
+            //sqlite3_bind_text(statement, 1, [@"Blob" UTF8String], -1,SQLITE_TRANSIENT);
+             data = [NSMutableArray arrayWithArray:sqlblock(&statement)];
         }
+        sqlite3_reset(statement);
+        sqlite3_finalize(statement); // destroy object used by _prepare_v2
+        sqlite3_close(eventDatabase);
     }
+
     return data;
 }
 
