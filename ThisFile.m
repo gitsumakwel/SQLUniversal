@@ -10,9 +10,6 @@
 #import <sqlite3.h>
 #import "FileSection.h"
 
-static sqlite3 *eventDatabase;
-static sqlite3_stmt *statement;
-
 @implementation ThisFile
 +(id)create
 {
@@ -30,10 +27,12 @@ static sqlite3_stmt *statement;
 
     else {
         /*
-         * you can do whatever want in here as long as your creating sqlblock
+         * you can do whatever you want in here as long as you create sqlblock and
          * contains:
-         * sqlite3_step(*statement == SQLITE_ROW) {
-           NSString *ename = [[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, 0)]; // sample getting data from column 0
+         *
+         * sqlite3_bind_text(*statement, 1, [@"Blob" UTF8String], -1,SQLITE_TRANSIENT); //optional
+           sqlite3_step(*statement == SQLITE_ROW) {
+                NSString *ename = [[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, 0)]; // sample getting data from column 0
            }
          *
         */
@@ -42,7 +41,7 @@ static sqlite3_stmt *statement;
             if(sqlite3_step(*statement) == SQLITE_ERROR) return @[@NO];
             
             int c = [[sqlStatement componentsSeparatedByString:@","] count];
-            if([sqlStatement rangeOfString:@"pragma"].length) {
+            if([sqlStatement rangeOfString:@"PRAGMA"].length) {
                 SqlBlock sqlblock = ^(sqlite3_stmt **statement){
                     int c = 0;
                     if(sqlite3_step(*statement) == SQLITE_ERROR) return @[@NO];
@@ -55,8 +54,10 @@ static sqlite3_stmt *statement;
             }
             else if([sqlStatement rangeOfString:@"*"].length){
                 ThisFile *thisfile = [ThisFile create];
-                NSString *select = [NSString stringWithFormat:@"pragma table_info('%@')",tableName];
-                c = [[[thisfile sqlStatement:select dbName:dbName tableName:nil] objectAtIndex:0] intValue];
+                NSString *select = [NSString stringWithFormat:@"PRAGMA TABLE_INFO('%@')",tableName];
+                c = [ [ [thisfile sqlStatement:select dbName:dbName tableName:nil]
+                         objectAtIndex:0]
+                       intValue];
             }
             NSMutableArray *mainArray = [[NSMutableArray alloc] init];
             while(sqlite3_step(*statement) == SQLITE_ROW) {
@@ -71,7 +72,7 @@ static sqlite3_stmt *statement;
         }; //sqlblock
         
         return [FileSection sqlBlock:sqlblock sqlStatement:sqlStatement dbName:dbName];
-    } // esle
+    } // else
     return NO;
 }
 
