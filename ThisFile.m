@@ -16,14 +16,7 @@ static sqlite3_stmt *statement;
 @implementation ThisFile
 +(id)create
 {
-    static ThisFile *thisfile;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        if(thisfile == nil) {
-            thisfile = [[ThisFile alloc] init];
-        }
-    });
-    return thisfile;
+    return [[ThisFile alloc] init];
 }
 
 - (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName tableName:(NSString *)tableName
