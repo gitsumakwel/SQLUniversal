@@ -14,6 +14,9 @@ typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement);
 
 /* WORKS WITH THIS FILE
  *
+ * ITS YOUR RESPONSIBILITY TO CHECK IF THE DATABASE/TABLE EXIST
+ *
+ *
  * + (BOOL)sqlStatement:(NSString *)sqlStatement dbName:dbName;
  * used: Insert, Delete, Update query Only
  * provide: database name and SQL Statement in NSString Object
