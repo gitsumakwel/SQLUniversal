@@ -14,9 +14,6 @@ typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement);
 
 /* WORKS WITH THIS FILE
  *
- * ITS YOUR RESPONSIBILITY TO CHECK IF THE DATABASE/TABLE EXIST
- *
- *
  * + (BOOL)sqlStatement:(NSString *)sqlStatement dbName:dbName;
  * used: Insert, Delete, Update query Only
  * provide: database name and SQL Statement in NSString Object
@@ -42,23 +39,25 @@ typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement);
  *
  * SqlBlock sqlblock = ^(sqlite3_stmt **statement) {
  
-        while(sqlite3_step(*statement) == SQLITE_ROW) {
-            NSMutableArray *subarray = [[NSMutableArray alloc] initWithCapacity:3];
-            for(int i=0; i < 3; i++) {
-                [subarray addObject:[[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, i)]];
-            }
-        [mainArray addObject:subarray];
+ while(sqlite3_step(*statement) == SQLITE_ROW) {
+ NSMutableArray *subarray = [[NSMutableArray alloc] initWithCapacity:3];
+ for(int i=0; i < 3; i++) {
+ [subarray addObject:[[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, i)]];
+ }
+ [mainArray addObject:subarray];
  
-    }
+ }
  
-  } //sqlblock
+ } //sqlblock
  *
  */
 
 
 @interface FileSection : NSObject
-+ (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
-+ (NSArray *)sqlBlock:(SqlBlock)sqlblock sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
++ (NSString *)filePathWithDBname:(NSString *)dbName sqlStatement:(NSString *)sqlStatement;
+- (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
+- (NSArray *)sqlBlock:(SqlBlock)sqlblock sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
+- (BOOL)prepareSQL:(NSString *)sqlStatement;
 
 @end
 

@@ -13,11 +13,12 @@
  * provide: Query Statement, DatabaseName, TableName(used in SELECT * statement / nil on other statement)
  * sample:
  
-
+ 
  **/
 #import <Foundation/Foundation.h>
+#import "FileSection.h"
 
-@interface ThisFile : NSObject
+@interface ThisFile :FileSection
 + (id)create;
 - (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName tableName:(NSString *)tableName;
 @end

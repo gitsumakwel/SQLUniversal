@@ -8,7 +8,8 @@
 
 #import "ThisFile.h"
 #import <sqlite3.h>
-#import "FileSection.h"
+
+#define say(v) NSLog(@"%d",v);
 
 @implementation ThisFile
 +(id)create
@@ -21,27 +22,28 @@
     
     sqlStatement = [sqlStatement stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     char c = [sqlStatement characterAtIndex:0];
-    if(c != 'S' || c != 's') {
-        return [FileSection sqlStatement:sqlStatement dbName:dbName];
+    
+    if(c != 'S' && c != 's'  && c != 'P' && c != 'p') {
+        return [self sqlStatement:sqlStatement dbName:dbName];
     }
-
     else {
         /*
          * you can do whatever you want in here as long as you create sqlblock and
          * contains:
          *
          * sqlite3_bind_text(*statement, 1, [@"Blob" UTF8String], -1,SQLITE_TRANSIENT); //optional
-           sqlite3_step(*statement == SQLITE_ROW) {
-                NSString *ename = [[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, 0)]; // sample getting data from column 0
-           }
+         sqlite3_step(*statement == SQLITE_ROW) {
+         NSString *ename = [[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, 0)]; // sample getting data from column 0
+         }
          *
-        */
+         */
         
         SqlBlock sqlblock = ^(sqlite3_stmt **statement) {
             if(sqlite3_step(*statement) == SQLITE_ERROR) return @[@NO];
             
             int c = [[sqlStatement componentsSeparatedByString:@","] count];
-            if([sqlStatement rangeOfString:@"PRAGMA"].length) {
+            
+            if([sqlStatement rangeOfString:@"PRAGMA"].length || [sqlStatement rangeOfString:@"1"].length) {
                 SqlBlock sqlblock = ^(sqlite3_stmt **statement){
                     int c = 0;
                     if(sqlite3_step(*statement) == SQLITE_ERROR) return @[@NO];
@@ -50,16 +52,22 @@
                     }
                     return @[[NSNumber numberWithInt:c]];
                 };
-                [FileSection sqlBlock:sqlblock sqlStatement:sqlStatement dbName:dbName];
+                
+                return [self sqlBlock:sqlblock sqlStatement:sqlStatement dbName:dbName];
             }
             else if([sqlStatement rangeOfString:@"*"].length){
                 ThisFile *thisfile = [ThisFile create];
                 NSString *select = [NSString stringWithFormat:@"PRAGMA TABLE_INFO('%@')",tableName];
+                
                 c = [ [ [thisfile sqlStatement:select dbName:dbName tableName:nil]
-                         objectAtIndex:0]
-                       intValue];
+                       objectAtIndex:0]
+                     intValue] + 1;
+                // call prepareSQL again cause we have called "prepare for pgrma" which makes our previous prepare invalid
+                [self prepareSQL:sqlStatement];
             }
+            NSLog(@"%@",sqlStatement);
             NSMutableArray *mainArray = [[NSMutableArray alloc] init];
+            
             while(sqlite3_step(*statement) == SQLITE_ROW) {
                 NSMutableArray *subarray = [[NSMutableArray alloc] initWithCapacity:c];
                 for(int i=0; i < c; i++) {
@@ -68,17 +76,14 @@
                 [mainArray addObject:subarray];
                 //
             }
+            
             return [NSArray arrayWithArray:mainArray];
         }; //sqlblock
         
-        return [FileSection sqlBlock:sqlblock sqlStatement:sqlStatement dbName:dbName];
+        return [self sqlBlock:sqlblock sqlStatement:sqlStatement dbName:dbName];
     } // else
     return NO;
 }
 
-+(void) AlertBox:(NSString *)title Message:(NSString *)message
-{
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-    [alertView show];
-}
+
 @end
