@@ -45,12 +45,13 @@
             
             if([sqlStatement rangeOfString:@"PRAGMA"].length || [sqlStatement rangeOfString:@"1"].length) {
                 SqlBlock sqlblock = ^(sqlite3_stmt **statement){
-                    int c = 0;
+                    
                     if(sqlite3_step(*statement) == SQLITE_ERROR) return @[@NO];
+                    NSMutableArray *columns = [[NSMutableArray alloc] init];
                     while(sqlite3_step(*statement) == SQLITE_ROW) {
-                        c++;
+                        [columns addObject:[[NSString alloc]initWithUTF8String:(const char *)sqlite3_column_text(*statement,1)]];
                     }
-                    return @[[NSNumber numberWithInt:c]];
+                    return [NSArray arrayWithArray:columns];
                 };
                 
                 return [self sqlBlock:sqlblock sqlStatement:sqlStatement dbName:dbName];
@@ -59,18 +60,16 @@
                 ThisFile *thisfile = [ThisFile create];
                 NSString *select = [NSString stringWithFormat:@"PRAGMA TABLE_INFO('%@')",tableName];
                 
-                c = [ [ [thisfile sqlStatement:select dbName:dbName tableName:nil]
-                       objectAtIndex:0]
-                     intValue] + 1;
+                c = [ [ thisfile sqlStatement:select dbName:dbName tableName:nil]
+                     count];
                 // call prepareSQL again cause we have called "prepare for pgrma" which makes our previous prepare invalid
                 [self prepareSQL:sqlStatement];
             }
-            NSLog(@"%@",sqlStatement);
             NSMutableArray *mainArray = [[NSMutableArray alloc] init];
             
             while(sqlite3_step(*statement) == SQLITE_ROW) {
                 NSMutableArray *subarray = [[NSMutableArray alloc] initWithCapacity:c];
-                for(int i=0; i < c; i++) {
+                for(int i=0; i <= c; i++) {
                     [subarray addObject:[[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, i)]];
                 }
                 [mainArray addObject:subarray];
