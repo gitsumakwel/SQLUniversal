@@ -51,12 +51,11 @@ static sqlite3_stmt *statement;
                 data = [NSMutableArray arrayWithArray:sqlblock(&statement)];
             }
         }
-        if([sqlStatement rangeOfString:@"CREATE"].length || [sqlStatement rangeOfString:@"SELECT"].length) {
+        if([sqlStatement rangeOfString:@"CREATE"].length ) {
             sqlite3_reset(statement);
             sqlite3_finalize(statement); // destroy object used by _prepare_v2
         }
-        if(![sqlStatement rangeOfString:@"PRAGMA"].length)
-            sqlite3_close(eventDatabase);
+        sqlite3_close(eventDatabase);
         
     }
     return data;
@@ -78,4 +77,5 @@ static sqlite3_stmt *statement;
     const char *sql_stmt = [sqlStatement UTF8String];
     return sqlite3_prepare_v2(eventDatabase, sql_stmt, -1, &statement, NULL);
 }
+
 @end
