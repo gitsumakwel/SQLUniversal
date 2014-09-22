@@ -42,7 +42,7 @@ static sqlite3_stmt *statement;
         if([sqlStatement rangeOfString:@"CREATE"].length) {
             char *message_error;
             if (sqlite3_exec(eventDatabase, sql_stmt, NULL, NULL, &message_error) != SQLITE_OK) {
-                return @[@NO];
+                return @[];
             }
             [data addObject:@YES];
         } else {
@@ -67,7 +67,7 @@ static sqlite3_stmt *statement;
         if(sqlite3_step(*statement) == SQLITE_DONE) {
             return @[@YES];
         }
-        return @[@NO];
+        return @[];
     };
     return [self sqlBlock:sqlblock sqlStatement:sqlStatement dbName:dbName];
 }

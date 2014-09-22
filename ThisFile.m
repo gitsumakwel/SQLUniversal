@@ -39,14 +39,11 @@
          */
         
         SqlBlock sqlblock = ^(sqlite3_stmt **statement) {
-            if(sqlite3_step(*statement) == SQLITE_ERROR) return @[@NO];
-            
             int c = [[sqlStatement componentsSeparatedByString:@","] count];
             
             if([sqlStatement rangeOfString:@"PRAGMA"].length || [sqlStatement rangeOfString:@"1"].length) {
                 SqlBlock sqlblock = ^(sqlite3_stmt **statement){
-                    
-                    if(sqlite3_step(*statement) == SQLITE_ERROR) return @[@NO];
+
                     NSMutableArray *columns = [[NSMutableArray alloc] init];
                     while(sqlite3_step(*statement) == SQLITE_ROW) {
                         [columns addObject:[[NSString alloc]initWithUTF8String:(const char *)sqlite3_column_text(*statement,1)]];
@@ -81,7 +78,7 @@
         
         return [self sqlBlock:sqlblock sqlStatement:sqlStatement dbName:dbName];
     } // else
-    return NO;
+    return @[];
 }
 
 
