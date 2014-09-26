@@ -23,7 +23,7 @@
     sqlStatement = [sqlStatement stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     char c = [sqlStatement characterAtIndex:0];
     
-    if(c != 'S' && c != 's') {
+    if((c != 'S' && c != 's') && ![sqlStatement rangeOfString:@"PRAGMA TABLE_INFO"].length) {
         return [self sqlStatement:sqlStatement dbName:dbName];
     }
     else {
@@ -44,7 +44,7 @@
             return [self tableColumns:tableName dbName:dbName];
         else
             c = (int)[[sqlStatement componentsSeparatedByString:@","] count];
-
+        
         SqlBlock sqlblock = ^(sqlite3_stmt **statement, sqlite3 **eventDatabase, NSString *dbpath) {
             NSMutableArray *mainArray = [[NSMutableArray alloc] init];
             while(sqlite3_step(*statement) == SQLITE_ROW) {
@@ -77,6 +77,5 @@
     NSString *sqlStatement = [NSString stringWithFormat:@"PRAGMA TABLE_INFO('%@')",tableName];
     return [[FileSection create]sqlBlock:sqlblock sqlStatement:sqlStatement dbName:dbName];
 }
-
 
 @end
