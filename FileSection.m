@@ -43,20 +43,20 @@
     const char *dbpath = [filepath UTF8String];
     
     if(sqlite3_open(dbpath, &(_eventDatabase)) == SQLITE_OK) {
-
+        
         const char *sql_stmt = [sqlStatement UTF8String];
         // Determine if we are going to create a new table
         // Or we're gonna use prepare for existing table to add_edit content
         if([sqlStatement rangeOfString:@"CREATE"].length) {
             char *message_error;
             if (sqlite3_exec(_eventDatabase, sql_stmt, NULL, NULL, &message_error) != SQLITE_OK) {
-                return @[@NO];
+                return @[];
             }
             [data addObject:@YES];
         } else {
             if(sqlite3_prepare_v2(_eventDatabase, sql_stmt, -1, &_statement, NULL) == SQLITE_OK) {
-
-//            sqlite3_bind_text(_statement, 1, [@"Blob" UTF8String], -1,SQLITE_TRANSIENT);
+                
+                //            sqlite3_bind_text(_statement, 1, [@"Blob" UTF8String], -1,SQLITE_TRANSIENT);
                 data = [NSMutableArray arrayWithArray:sqlblock(&_statement, &_eventDatabase, [NSString stringWithUTF8String:dbpath])];
             }
         }
@@ -64,8 +64,8 @@
             sqlite3_reset(_statement);
             sqlite3_finalize(_statement); // destroy object used by _prepare_
         }
-
-    sqlite3_close(_eventDatabase);
+        
+        sqlite3_close(_eventDatabase);
     }
     return data;
 }

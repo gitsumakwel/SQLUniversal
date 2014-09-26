@@ -54,7 +54,7 @@ typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement, sqlite3 **eventDatabase, N
  * + (NSString *)filePathWithDBname:(NSString *)dbName sqlStatement:(NSString *)sqlStatement;
  * Check for dabatabase
  * if doesnt exist create and add table
- * sample:
+ * sample: (declared in a viewcontroller)
  NSString *path = [FileSection filePathWithDBname:DBFile_dummy sqlStatement:nil];
  if(!path) {
  thisfile = [ThisFile create];
