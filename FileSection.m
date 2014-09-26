@@ -36,8 +36,6 @@
     return nil;
 }
 
-//filepath	NSString *	@"/Users/bjrayel/Library/Developer/CoreSimulator/Devices/E59ADD11-FBFA-46B2-8155-8F71F418A593/data/Containers/Data/Application/4B35493E-0144-4198-8DEF-09FBD7CF08B3/Documents/dummy.db"
-
 - (NSArray *)sqlBlock:(SqlBlock)sqlblock sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName
 {
     NSMutableArray *data;
