@@ -39,16 +39,28 @@ typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement, sqlite3 **eventDatabase, N
  *
  * SqlBlock sqlblock = ^(sqlite3_stmt **statement) {
  
-        while(sqlite3_step(*statement) == SQLITE_ROW) {
-            NSMutableArray *subarray = [[NSMutableArray alloc] initWithCapacity:3];
-            for(int i=0; i < 3; i++) {
-                [subarray addObject:[[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, i)]];
-            }
-        [mainArray addObject:subarray];
+ while(sqlite3_step(*statement) == SQLITE_ROW) {
+ NSMutableArray *subarray = [[NSMutableArray alloc] initWithCapacity:3];
+ for(int i=0; i < 3; i++) {
+ [subarray addObject:[[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, i)]];
+ }
+ [mainArray addObject:subarray];
  
-    }
+ }
  
-  } //sqlblock
+ } //sqlblock
+ *
+ *
+ * + (NSString *)filePathWithDBname:(NSString *)dbName sqlStatement:(NSString *)sqlStatement;
+ * Checking for dabatabase
+ * if doesnt exist create and add table
+ * sample:
+ NSString *path = [FileSection filePathWithDBname:DBFile_dummy sqlStatement:nil];
+ if(!path) {
+ thisfile = [ThisFile create];
+ sqlStatement =  @"CREATE TABLE IF NOT EXISTS IMPORTANT(ID INTEGER PRIMARY KEY AUTOINCREMENT, searchcode TEXT,   datacode TEXT)";
+ [thisfile sqlStatement:sqlStatement dbName:DBFile_dummy tableName:nil];
+ }
  *
  */
 
