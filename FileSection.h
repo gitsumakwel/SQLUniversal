@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <sqlite3.h>
 
-typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement);
+typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement, sqlite3 **eventDatabase, NSString *dbpath);
 
 
 /* WORKS WITH THIS FILE
@@ -39,25 +39,25 @@ typedef NSArray*(^SqlBlock)(sqlite3_stmt **statement);
  *
  * SqlBlock sqlblock = ^(sqlite3_stmt **statement) {
  
- while(sqlite3_step(*statement) == SQLITE_ROW) {
- NSMutableArray *subarray = [[NSMutableArray alloc] initWithCapacity:3];
- for(int i=0; i < 3; i++) {
- [subarray addObject:[[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, i)]];
- }
- [mainArray addObject:subarray];
+        while(sqlite3_step(*statement) == SQLITE_ROW) {
+            NSMutableArray *subarray = [[NSMutableArray alloc] initWithCapacity:3];
+            for(int i=0; i < 3; i++) {
+                [subarray addObject:[[NSString alloc] initWithUTF8String:(const char *) sqlite3_column_text(*statement, i)]];
+            }
+        [mainArray addObject:subarray];
  
- }
+    }
  
- } //sqlblock
+  } //sqlblock
  *
  */
 
-
 @interface FileSection : NSObject
++ (id)create;
 + (NSString *)filePathWithDBname:(NSString *)dbName sqlStatement:(NSString *)sqlStatement;
-- (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
 - (NSArray *)sqlBlock:(SqlBlock)sqlblock sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
-- (BOOL)prepareSQL:(NSString *)sqlStatement;
+- (NSArray *)sqlStatement:(NSString *)sqlStatement dbName:(NSString *)dbName;
+
 
 @end
 
